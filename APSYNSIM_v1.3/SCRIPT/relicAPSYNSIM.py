@@ -214,7 +214,7 @@ class Interferometer(object):
       RMSEFile = '/home/hegedus/Downloads/RadGal/rmse_t2.dat'
       if saveRMSE:  
         f = open(RMSEFile, 'a')
-        f.write(str(self.nH) + ' ' + str(rmse) + '\n')
+        f.write(str(self.nH) + ' ' + str(rmse) + ' ' + self.times[-1]+ '\n')
         f.close()
     
 

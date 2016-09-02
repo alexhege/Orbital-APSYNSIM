@@ -182,14 +182,14 @@ class Interferometer(object):
 
   def quit(self,event=None):
   
-    gifMode = True
+    gifMode = False
     
     if not gifMode:
       #Hegedus put print info here if want  
       #Saves current screen, change path if needed 
       saveFig = True
-      gifName = True
-      baseFigName = '/home/hegedus/Downloads/RadGal/t2.png'
+      gifName = False
+      baseFigName = '/media/sf_XubuntuShare/RadGal/tr30.png'
       figName = baseFigName
       if gifName:
         figName = figName[:-4]+ '_' + str(self.nH) + '.png'
@@ -200,21 +200,21 @@ class Interferometer(object):
       
       Np4 = self.Npix/4
       mod = self.modelimTrue[Np4:self.Npix-Np4,Np4:self.Npix-Np4]
-      #print 'model brightest is ' + str(np.amax(mod))
-      #print 'model average is ' + str(np.average(mod))
+      print 'model brightest is ' + str(np.amax(mod))
+      print 'model average is ' + str(np.average(mod))
       dirt = self.dirtymap[Np4:self.Npix-Np4,Np4:self.Npix-Np4]
       dirt *= np.max(mod)/np.max(dirt) #normalize so on same scale as input
-      #print 'dirty brightest is ' + str(np.amax(dirt))
-      #print 'dirty average is ' + str(np.average(dirt))
+      print 'dirty brightest is ' + str(np.amax(dirt))
+      print 'dirty average is ' + str(np.average(dirt))
 
       rmse = np.sqrt(((mod - dirt)**2).mean())
       print 'rmse is ' + str(rmse)
       
       saveRMSE = True
-      RMSEFile = '/home/hegedus/Downloads/RadGal/rmse_t2.dat'
+      RMSEFile = '/media/sf_XubuntuShare/RadGal/rmse_t3.dat'
       if saveRMSE:  
         f = open(RMSEFile, 'a')
-        f.write(str(self.nH) + ' ' + str(rmse) + ' ' + self.times[-1]+ '\n')
+        f.write(str(self.nH) + ' ' + str(rmse) + ' ' + self.times[-1] + '\n')
         f.close()
     
 
@@ -352,7 +352,7 @@ class Interferometer(object):
 
     self.Nphf = self.Npix/2
     self.robfac = 0.0
-    self.figUV = pl.figure(figsize=(15,8))
+    self.figUV = pl.figure(figsize=(18, 8))
 
     if self.tks is None:
        self.canvas = self.figUV.canvas
@@ -478,8 +478,8 @@ class Interferometer(object):
     self.widget['diameter'].on_changed(self._setDiameter)
 
 
-    gifMode = True
-    stepSize = 10 ### needs #s for sed
+    gifMode = False
+    stepSize = 5 ### needs #s for sed
     
     if not gifMode:
       self._prepareBeam()
@@ -549,8 +549,8 @@ class Interferometer(object):
         #Hegedus put print info here if want  
         #Saves current screen, change path if needed 
         saveFig = True
-        gifName = True
-        baseFigName = '/home/hegedus/Downloads/RadGal/t2.png'
+        gifName = False
+        baseFigName = '/media/sf_XubuntuShare/RadGal/tr30.png'
         figName = baseFigName
         if gifName:
           figName = figName[:-4]+ '_' + str(i+stepSize) + '.png'
@@ -572,7 +572,7 @@ class Interferometer(object):
         print 'rmse is ' + str(rmse)
         
         saveRMSE = True
-        RMSEFile = '/home/hegedus/Downloads/RadGal/rmse_t2.dat'
+        RMSEFile = '/media/sf_XubuntuShare/RadGal/rmse_t3.dat'
         if saveRMSE:  
           f = open(RMSEFile, 'a')
           f.write(str(i+stepSize) + ' ' + str(rmse) + ' ' + self.times[i+stepSize-1] + '\n')
@@ -1391,7 +1391,7 @@ class Interferometer(object):
         k = 1.38e-23
         sefd = 2*k*Tgal/Ae*10**26
         bandwidth = 32000
-        intTime = .1 #seconds
+        intTime = .005 #seconds
         Srms =  sefd/(np.sqrt(intTime*bandwidth))
         if customNoise:
           Srms = customRMS
@@ -1399,7 +1399,7 @@ class Interferometer(object):
         print 'Using noise of ' + str(Srms)
 
         modelimNoise = self.modelimTrue + np.random.normal(0, Srms, np.shape(self.modelimTrue))
-        modelimNoise[modelimNoise<0.0] = 0.0
+        #modelimNoise[modelimNoise<0.0] = 0.0
 
         if self.Diameters[0]>0.0:
           PB = 2.*(1220.*180./np.pi*3600.*self.wavelength/self.Diameters[0]/2.3548)**2.  # 2*sigma^2 #Strehl Ratio???
@@ -1449,7 +1449,7 @@ class Interferometer(object):
         k = 1.38e-23
         sefd = 2*k*Tgal/Ae*10**26
         bandwidth = 32000
-        intTime = .1 #seconds
+        intTime = .005 #seconds
         Srms =  sefd/(np.sqrt(intTime*bandwidth))
         if customNoise:
           Srms = customRMS
@@ -1460,6 +1460,7 @@ class Interferometer(object):
         Gsampling = np.zeros((self.Npix,self.Npix),dtype=np.complex64)
 
         accum = np.zeros((self.Npix,self.Npix),dtype=np.complex64)
+        #print str(stepSize) + ' ' + str(self.nH)
 
        #slice it up so these are sampled from current noisy model part 
         for i in range(0, self.nH, stepSize):
@@ -1472,8 +1473,8 @@ class Interferometer(object):
           self.UVpixsize = 2./(self.imsize*np.pi/180./3600.)
 
           for nb in range(self.Nbas):
-            pixU = np.rint(self.u[nb, gifStep:gifStep+stepSize]/self.UVpixsize).flatten().astype(np.int32)
-            pixV = np.rint(self.v[nb, gifStep:gifStep+stepSize]/self.UVpixsize).flatten().astype(np.int32)
+            pixU = np.rint(self.u[nb, i:i+stepSize]/self.UVpixsize).flatten().astype(np.int32)
+            pixV = np.rint(self.v[nb, i:i+stepSize]/self.UVpixsize).flatten().astype(np.int32)
             goodpix = np.logical_and(np.abs(pixU)<self.Nphf,np.abs(pixV)<self.Nphf)
             pU = pixU[goodpix] + self.Nphf
             pV = pixV[goodpix] + self.Nphf
@@ -1482,14 +1483,14 @@ class Interferometer(object):
 
             pixpos[nb] = [np.copy(pU),np.copy(pV),np.copy(mU),np.copy(mV)]
             gpix = np.zeros((self.nH), dtype=bool)
-            gpix[gifStep:gifStep+stepSize]= goodpix
+            gpix[i:i+stepSize]= goodpix
             for k in range(len(pV)):
               totsampling[pV[k], mU[k]] += 1.0
               totsampling[mV[k], pU[k]] += 1.0
               Gsampling[pV[k],mU[k]] += self.Gains[nb,gpix][k]
               Gsampling[mV[k],pU[k]] += np.conjugate(self.Gains[nb,gpix][k])
-              self.accumGsampling[pV[k],mU[k]] += self.Gains[nb,gpix][k]
-              self.accumGsampling[mV[k],pU[k]] += np.conjugate(self.Gains[nb,gpix][k])
+              #self.accumGsampling[pV[k],mU[k]] += self.Gains[nb,gpix][k]
+              #self.accumGsampling[mV[k],pU[k]] += np.conjugate(self.Gains[nb,gpix][k])
             #totsampling[pV,mU] += 1.0
             #totsampling[mV,pU] += 1.0
             
@@ -1502,8 +1503,9 @@ class Interferometer(object):
           ###Hegedus adding gaussian random noise
 
           modelimNoise = self.modelimTrue + np.random.normal(0, Srms, np.shape(self.modelimTrue))
-          modelimNoise[modelimNoise<0.0] = 0.0
-
+          #print str(np.max(modelimNoise)) + ', is max modelimnoise'
+          #modelimNoise[modelimNoise<0.0] = 0.0
+          #print str(np.max(modelimNoise)) + ', is max modelimnoise'
           if self.Diameters[0]>0.0:
             PB = 2.*(1220.*180./np.pi*3600.*self.wavelength/self.Diameters[0]/2.3548)**2.  # 2*sigma^2 #Strehl Ratio???
             #  print PB, np.max(self.distmat),self.wavelength

@@ -66,7 +66,7 @@ for line in pfile.readlines():
 numsc = np.shape(scpos)[1]/3
 
 #what the sed script looks to change to modify integration time, and time intervals used
-ranges =  ((0, 30))
+ranges =  ((0, 1))
 snips = []
 timesnips = []
 

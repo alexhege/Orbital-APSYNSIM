@@ -15,18 +15,18 @@ autoQuit = True
 
 #if savefig true, then save fig to this path, .png only
 saveFig = True
-figName = /home/hegedus/Downloads/RadGal/t2.png 
+figName = /media/sf_XubuntuShare/RadGal/tr30.png 
 
 #file append '#timesteps rmse' to
 saveRMSE = True
-RMSEFile = /home/hegedus/Downloads/RadGal/rmse_t2.dat 
+RMSEFile = /media/sf_XubuntuShare/RadGal/rmse_t3.dat 
 
 #config params
 Npix = 2048 #power of 2 image size int
 
 #range format ((a1, a2), (b1, b2), ...) indices into time series from a1 up to not including a2
 #For a single range ((a1, a2)) or (a1, a2) work
-ranges = ((0, 30))
+ranges = ((0, 1))
 
 
 
@@ -52,7 +52,7 @@ gainNoiseRMS = (0.1, 0.1)
 #Or number for rms (Jy) 
 tNoise = True
 thermalNoise = galactic 
-step = 10 #How often to update noise, higher is faster
+step = 5 #How often to update noise, higher is faster
 intTime = .005 # in seconds
 bandwidth = 32000 
 
@@ -69,7 +69,7 @@ clockUncert = 4e-9
 #do looping over current ranges/parameters creates pngs for every frame and a gif of them  
 #Adds number of samples on end of filename png like RadGal_10.png 
 #turns on autoquit and savefig, uses step from thermal noise for stepsize
-makegif = True
+makegif = False
 
 
 

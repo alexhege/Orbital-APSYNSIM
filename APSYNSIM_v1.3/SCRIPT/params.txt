@@ -8,37 +8,41 @@ APSYNSIMDir = /home/hegedus/Downloads/APSYNSIM_v1.3
 orbitFile = /home/hegedus/Downloads/APSYNSIM_v1.3/SCRIPT/inert_traj_061216_reconfig.txt
 
 #largest baseline in km, keeps antenna plot axes same width+height
-largestbl = 600.
+largestbl = 8000. #600.
 
 #quit immediately after figure creation? use with savefig possible
 autoQuit = True 
 
 #if savefig true, then save fig to this path, .png only
 saveFig = True
-figName = /media/sf_XubuntuShare/RadGal/tr30.png 
+figName = /home/hegedus/Downloads/RadGal/vlba.png #/media/sf_XubuntuShare/RadGal/
 
-#file append '#timesteps rmse' to
+#file append '#timesteps rmse date' to
 saveRMSE = True
-RMSEFile = /media/sf_XubuntuShare/RadGal/rmse_t3.dat 
+RMSEFile = /home/hegedus/Downloads/RadGal/rmse_vlba.dat # /media/sf_XubuntuShare
 
 #config params
 Npix = 2048 #power of 2 image size int
 
 #range format ((a1, a2), (b1, b2), ...) indices into time series from a1 up to not including a2
 #For a single range ((a1, a2)) or (a1, a2) work
-ranges = ((0, 1))
+#for blackbox, works with indices into orbit file, vlba uses JD, eg ((2457690.5, 2457690.6))
+ranges = ((2457690.5, 2457690.6))
+
+#step for JD vlba
+stepJD = .01
 
 
 
 #in source model
 imageName = dubGauss.png #full path, or just imagename if in APSYNSIM_v1.3/PICTURES, png only
-imSize = 800. #arcsec width of image
-wavelength = 30. #in meters 
+imSize = .08 #arcsec width of image
+wavelength = .1 #30. #in meters 
 brightestPix = 500.0 #highest flux density pixel in image (Jy), rmse will scale with this
 
 
 #in array file/inbase file
-diameter = 0.5 #meters DIAMETER 25.0 in .array file
+diameter = 25. #meters DIAMETER 25.0 in .array file
 #Where to point to on sky, default here is for Cyg A
 ra = '19:59:28.3566' #in hours minutes seconds
 dec = '40:44:02.096' # in degrees, arcminutes, arcseconds
@@ -52,13 +56,13 @@ gainNoiseRMS = (0.1, 0.1)
 #Or number for rms (Jy) 
 tNoise = True
 thermalNoise = galactic 
-step = 5 #How often to update noise, higher is faster
+step = 1 #How often to update noise, higher is faster
 intTime = .005 # in seconds
 bandwidth = 32000 
 
 
 #introduce phase errors from positional uncertainty and clock bias error both in seconds
-posUncertain = True 
+posUncertain = False 
 posUncert = 6e-9 
 clockUncert = 4e-9 
 
@@ -69,7 +73,7 @@ clockUncert = 4e-9
 #do looping over current ranges/parameters creates pngs for every frame and a gif of them  
 #Adds number of samples on end of filename png like RadGal_10.png 
 #turns on autoquit and savefig, uses step from thermal noise for stepsize
-makegif = False
+makegif = True
 
 
 

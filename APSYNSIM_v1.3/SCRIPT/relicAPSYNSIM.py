@@ -182,14 +182,14 @@ class Interferometer(object):
 
   def quit(self,event=None):
   
-    gifMode = False
+    gifMode = True
     
     if not gifMode:
       #Hegedus put print info here if want  
       #Saves current screen, change path if needed 
       saveFig = True
-      gifName = False
-      baseFigName = '/media/sf_XubuntuShare/RadGal/tr30.png'
+      gifName = True
+      baseFigName = '/home/hegedus/Downloads/RadGal/vlba.png'
       figName = baseFigName
       if gifName:
         figName = figName[:-4]+ '_' + str(self.nH) + '.png'
@@ -211,10 +211,10 @@ class Interferometer(object):
       print 'rmse is ' + str(rmse)
       
       saveRMSE = True
-      RMSEFile = '/media/sf_XubuntuShare/RadGal/rmse_t3.dat'
+      RMSEFile = '/home/hegedus/Downloads/RadGal/rmse_vlba.dat'
       if saveRMSE:  
         f = open(RMSEFile, 'a')
-        f.write(str(self.nH) + ' ' + str(rmse) + ' ' + self.times[-1] + '\n')
+        f.write(str(self.nH) + ' ' + str(rmse) + ' ' + str(self.times[-1]) + '\n')
         f.close()
     
 
@@ -283,10 +283,10 @@ class Interferometer(object):
     conf.close()
         ###Hegedus adding shoehorn here, before anything so antenna pos updated in file
 
-    import relicinbase
+    import vlbainbase as relicinbase
 
     self.baselines = relicinbase.baselines
-    self.largestbl = 600.
+    self.largestbl = 8000.
     self.nH = self.baselines.shape[1]
     self.times = relicinbase.times
     self.projpos = relicinbase.projpos
@@ -406,7 +406,7 @@ class Interferometer(object):
     self.canvas.mpl_connect('key_press_event', self._onKeyPress)
     self.pickAnt = False
 
-    self.fmtH = '%i Time Samples \nNow' + self.times[-1]#r'$\phi = $ %3.1f$^\circ$   $\delta = $ %3.1f$^\circ$' "\n" r'H = %3.1fh / %3.1fh'
+    self.fmtH = '%i Time Samples \nNow ' + str(self.times[-1])#r'$\phi = $ %3.1f$^\circ$   $\delta = $ %3.1f$^\circ$' "\n" r'H = %3.1fh / %3.1fh'
     self.fmtBas = r'Bas %i $-$ %i  at  H = %4.2fh'
     self.fmtVis = r'Amp: %.1e Jy.   Phase: %5.1f deg.' 
     self.fmtA = 'N = %i'
@@ -478,8 +478,8 @@ class Interferometer(object):
     self.widget['diameter'].on_changed(self._setDiameter)
 
 
-    gifMode = False
-    stepSize = 5 ### needs #s for sed
+    gifMode = True
+    stepSize = 1 ### needs #s for sed
     
     if not gifMode:
       self._prepareBeam()
@@ -508,10 +508,13 @@ class Interferometer(object):
       self._plotModel()
       self._plotModelFFT()
       
+      assert (self.nH - stepSize+1) > 0, "need more time samples than thermal step size!!"
+      
       
       for i in range(0, self.nH - stepSize+1, stepSize):
+
       
-        self.fmtH = '%i Time Samples \nNow' + self.times[i+stepSize-1]
+        self.fmtH = '%i Time Samples \nNow ' + str(self.times[i+stepSize-1])
        
         self._setBeam(gifStep = i+stepSize)
         self._plotBeam()
@@ -549,8 +552,8 @@ class Interferometer(object):
         #Hegedus put print info here if want  
         #Saves current screen, change path if needed 
         saveFig = True
-        gifName = False
-        baseFigName = '/media/sf_XubuntuShare/RadGal/tr30.png'
+        gifName = True
+        baseFigName = '/home/hegedus/Downloads/RadGal/vlba.png'
         figName = baseFigName
         if gifName:
           figName = figName[:-4]+ '_' + str(i+stepSize) + '.png'
@@ -572,10 +575,10 @@ class Interferometer(object):
         print 'rmse is ' + str(rmse)
         
         saveRMSE = True
-        RMSEFile = '/media/sf_XubuntuShare/RadGal/rmse_t3.dat'
+        RMSEFile = '/home/hegedus/Downloads/RadGal/rmse_vlba.dat'
         if saveRMSE:  
           f = open(RMSEFile, 'a')
-          f.write(str(i+stepSize) + ' ' + str(rmse) + ' ' + self.times[i+stepSize-1] + '\n')
+          f.write(str(i+stepSize) + ' ' + str(rmse) + ' ' + str(self.times[i+stepSize-1]) + '\n')
           f.close()
       
     
@@ -949,7 +952,7 @@ class Interferometer(object):
 
 
     #introduce phase noise from positional uncertainty
-    posUncertain = True
+    posUncertain = False
     posUncert = 6e-9 #in ns
     clockUncert = 4e-9 # in ns
 
@@ -1628,7 +1631,7 @@ class Interferometer(object):
     #self.UVPlot.set_xlim((-300, 300))
     #self.UVPlot.set_ylim((-300, 300))
     
-    val=.75/self.wavelength
+    val=.75/self.wavelength*10.
     self.UVPlot.set_xlim((-val, val))
     self.UVPlot.set_ylim((-val, val))
     ###
@@ -1712,7 +1715,7 @@ class Interferometer(object):
       self.beamPlot.set_xlabel('RA offset (as)')
       
       #Hegedus change bounds 
-      fudge = self.wavelength/.005
+      fudge = self.wavelength/.005/6.
       self.beamPlot.set_xlim((-15*fudge, 15*fudge))
       self.beamPlot.set_ylim((-15*fudge, 15*fudge))
       ###

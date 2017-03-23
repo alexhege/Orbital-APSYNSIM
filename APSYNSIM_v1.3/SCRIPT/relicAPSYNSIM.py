@@ -183,13 +183,16 @@ class Interferometer(object):
   def quit(self,event=None):
   
     gifMode = True
+
+    baseFigName = '/home/hegedus/Downloads/RadGal/Tvlba.png'
+    saveFig = True
     
     if not gifMode:
       #Hegedus put print info here if want  
       #Saves current screen, change path if needed 
       saveFig = True
       gifName = True
-      baseFigName = '/home/hegedus/Downloads/RadGal/vlba.png'
+      baseFigName = '/home/hegedus/Downloads/RadGal/Tvlba.png'
       figName = baseFigName
       if gifName:
         figName = figName[:-4]+ '_' + str(self.nH) + '.png'
@@ -217,6 +220,18 @@ class Interferometer(object):
         f.write(str(self.nH) + ' ' + str(rmse) + ' ' + str(self.times[-1]) + '\n')
         f.close()
     
+    #save dirty image and beam
+    if saveFig:
+      self.beamPlot.axis('off')
+      self.dirtyPlot.axis('off')
+      self.canvas.draw()
+      beamExtent = self.beamPlot.get_window_extent().transformed(self.figUV.dpi_scale_trans.inverted())
+      beamPicName = baseFigName[:-4] + '_beam.png'
+      self.figUV.savefig(beamPicName, bbox_inches=beamExtent)
+
+      dirtyExtent = self.dirtyPlot.get_window_extent().transformed(self.figUV.dpi_scale_trans.inverted())
+      dirtyPicName = baseFigName[:-4] + '_dirty.png'
+      self.figUV.savefig(dirtyPicName, bbox_inches=dirtyExtent)
 
     self.tks.destroy()
     sys.exit()
@@ -283,6 +298,8 @@ class Interferometer(object):
     conf.close()
         ###Hegedus adding shoehorn here, before anything so antenna pos updated in file
 
+
+    #vlbainbase or relicinbase depending on mode
     import vlbainbase as relicinbase
 
     self.baselines = relicinbase.baselines
@@ -435,7 +452,7 @@ class Interferometer(object):
     self.wax['quit']=pl.axes([0.155,0.02,0.08,0.05])
     #self.wax['loadmod']=pl.axes([0.24,0.08,0.08,0.05])
     self.wax['gammacorr']=pl.axes([0.46,0.08,0.13,0.02],axisbg='white')
-    self.wax['diameter']=pl.axes([0.825,0.08,0.10,0.02],axisbg='white')
+    #Rself.wax['diameter']=pl.axes([0.825,0.08,0.10,0.02],axisbg='white')
     #self.wax['subarrwgt']=pl.axes([0.15,0.58,0.12,0.02],axisbg='white')
     self.widget['robust'] = Slider(self.wax['robust'],r'Robust',-2.,2.,valinit=0.0)
     #self.widget['lat'] = Slider(self.wax['lat'],r'Lat (deg)',-90.,90.,valinit=self.lat/self.deg2rad)
@@ -454,9 +471,9 @@ class Interferometer(object):
     self.widget['gammacorr'].label.set_color('white')
     self.widget['gammacorr'].valtext.set_color('white')
 
-    self.widget['diameter'] = Slider(self.wax['diameter'],'Dish size (m)',0,100.,valinit=0.0,color='red')
-    self.widget['diameter'].label.set_color('white')
-    self.widget['diameter'].valtext.set_color('white')
+    #Rself.widget['diameter'] = Slider(self.wax['diameter'],'Dish size (m)',0,100.,valinit=0.0,color='red')
+    #Rself.widget['diameter'].label.set_color('white')
+    #Rself.widget['diameter'].valtext.set_color('white')
 
     #self.widget['subarrwgt'] = Slider(self.wax['subarrwgt'],'log(W1/W2)',-4,4,valinit=0,color='red')
 
@@ -475,7 +492,7 @@ class Interferometer(object):
     self.widget['quit'].on_clicked(self.quit)
     #self.widget['reduce'].on_clicked(self._reduce)
     #self.widget['subarrwgt'].on_changed(self._subarrwgt)
-    self.widget['diameter'].on_changed(self._setDiameter)
+    #Rself.widget['diameter'].on_changed(self._setDiameter)
 
 
     gifMode = True
@@ -553,12 +570,13 @@ class Interferometer(object):
         #Saves current screen, change path if needed 
         saveFig = True
         gifName = True
-        baseFigName = '/home/hegedus/Downloads/RadGal/vlba.png'
+        baseFigName = '/home/hegedus/Downloads/RadGal/Tvlba.png'
         figName = baseFigName
         if gifName:
           figName = figName[:-4]+ '_' + str(i+stepSize) + '.png'
         if saveFig:
           self.canvas.print_png(figName)
+          
         
         #Save rmse of dirty image vs model image
         
@@ -1218,16 +1236,22 @@ class Interferometer(object):
       img = plimg.imread(imfile[0]).astype(np.float32)
       dims = np.shape(img)
       print 'dims is ' + str(dims)
-      d3 = min(2,dims[2])
-      d1 = float(max(dims))
-      avimg = np.average(img[:,:,:d3],axis=2)
+      avimg = img
+      if len(dims) == 2:
+	avimg = img
+	d1 = float(max(dims))
+      else: 
+        d3 = min(2,dims[2])
+	d1 = float(max(dims))
+	avimg = np.average(img[:,:,:d3],axis=2)
+
       avimg -= np.min(avimg)
       avimg *= imfile[1]/np.max(avimg)
       if d1 == self.Nphf:
         sh0 = (self.Nphf-dims[0])/2
         sh1 = (self.Nphf-dims[1])/2
         zoomimg = spndint.zoom(avimg,float(self.Nphf)/d1)
-        self.modelimTrue[sh0+Np4:sh0+Np4+dims[0], sh1+Np4:sh1+Np4+dims[1]] += zoomimg
+        self.modelimTrue[sh0+Np4:sh0+Np4+dims[0], sh1+Np4:sh1+Np4+dims[1]] += zoomimgdimen
       else:
         zoomimg = spndint.zoom(avimg,float(self.Nphf)/d1)
         zdims = np.shape(zoomimg)
@@ -1343,7 +1367,7 @@ class Interferometer(object):
       self.accum = np.zeros((self.Npix,self.Npix),dtype=np.complex64)
       #print 'starting dirty gif making, made empty accum'
       
-    
+    #so we are in gif mode, accumulating thermal noise
     if gifStep != -1:
     
       Gsampling = np.zeros((self.Npix,self.Npix),dtype=np.complex64)
@@ -1394,7 +1418,7 @@ class Interferometer(object):
         k = 1.38e-23
         sefd = 2*k*Tgal/Ae*10**26
         bandwidth = 32000
-        intTime = .005 #seconds
+        intTime = 864. #seconds
         Srms =  sefd/(np.sqrt(intTime*bandwidth))
         if customNoise:
           Srms = customRMS
@@ -1452,7 +1476,7 @@ class Interferometer(object):
         k = 1.38e-23
         sefd = 2*k*Tgal/Ae*10**26
         bandwidth = 32000
-        intTime = .005 #seconds
+        intTime = 864. #seconds
         Srms =  sefd/(np.sqrt(intTime*bandwidth))
         if customNoise:
           Srms = customRMS
@@ -1550,9 +1574,9 @@ class Interferometer(object):
       self.dirtyPlot.cla()
       self.dirtyPlotPlot = self.dirtyPlot.imshow(self.dirtymap[Np4:self.Npix-Np4,Np4:self.Npix-Np4],interpolation='nearest',picker=True, cmap=self.currcmap)
       modflux = self.dirtymap[self.Nphf,self.Nphf]
-      self.dirtyText = self.dirtyPlot.text(0.05,0.87,self.fmtD%(modflux,0.0,0.0),
-         transform=self.dirtyPlot.transAxes,bbox=dict(facecolor='white', 
-         alpha=0.7))
+      #Rself.dirtyText = self.dirtyPlot.text(0.05,0.87,self.fmtD%(modflux,0.0,0.0),
+      #R   transform=self.dirtyPlot.transAxes,bbox=dict(facecolor='white', 
+      #R   alpha=0.7))
       pl.setp(self.dirtyPlotPlot, extent=(self.Xaxmax/2.,-self.Xaxmax/2.,-self.Xaxmax/2.,self.Xaxmax/2.))
       self.curzoom[1] = (self.Xaxmax/2.,-self.Xaxmax/2.,-self.Xaxmax/2.,self.Xaxmax/2.)
       self.dirtyPlot.set_ylabel('Dec offset (as)')
@@ -1631,7 +1655,9 @@ class Interferometer(object):
     #self.UVPlot.set_xlim((-300, 300))
     #self.UVPlot.set_ylim((-300, 300))
     
-    val=.75/self.wavelength*10.
+    #val=.75/self.wavelength*10. #VLBA val
+    #val = .75/self.wavelength
+    val = .75/self.wavelength*self.largestbl/800.  #general between both modes
     self.UVPlot.set_xlim((-val, val))
     self.UVPlot.set_ylim((-val, val))
     ###
@@ -1709,15 +1735,17 @@ class Interferometer(object):
     if redo:
       self.beamPlot.cla()
       self.beamPlotPlot = self.beamPlot.imshow(self.beam[Np4:self.Npix-Np4,Np4:self.Npix-Np4],picker=True,interpolation='nearest', cmap=self.currcmap)
-      self.beamText = self.beamPlot.text(0.05,0.80,self.fmtB%(1.0,0.0,0.0),
-           transform=self.beamPlot.transAxes,bbox=dict(facecolor='white', alpha=0.7))
+      #Rself.beamText = self.beamPlot.text(0.05,0.80,self.fmtB%(1.0,0.0,0.0),
+      #R     transform=self.beamPlot.transAxes,bbox=dict(facecolor='white', alpha=0.7))
       self.beamPlot.set_ylabel('Dec offset (as)')
       self.beamPlot.set_xlabel('RA offset (as)')
       
       #Hegedus change bounds 
-      fudge = self.wavelength/.005/6.
-      self.beamPlot.set_xlim((-15*fudge, 15*fudge))
-      self.beamPlot.set_ylim((-15*fudge, 15*fudge))
+      #fudge = self.wavelength/.005/6. #VLBA fudge
+      #fudge = self.wavelength/.005
+      fudge = self.wavelength/.005/(self.largestbl/600.) #general fudge works in both modes
+      #Rself.beamPlot.set_xlim((-15*fudge, 15*fudge))
+      #Rself.beamPlot.set_ylim((-15*fudge, 15*fudge))
       ###
 
       pl.setp(self.beamPlotPlot, extent=(self.Xaxmax/2.,-self.Xaxmax/2.,-self.Xaxmax/2.,self.Xaxmax/2.))
@@ -1727,7 +1755,7 @@ class Interferometer(object):
       self.canvas.draw()
     else:
       self.beamPlotPlot.set_data(self.beam[Np4:self.Npix-Np4,Np4:self.Npix-Np4])
-      self.beamText.set_text(self.fmtB%(1.0,0.0,0.0))
+      #Rself.beamText.set_text(self.fmtB%(1.0,0.0,0.0))
 
 
     self.nptot = np.sum(self.totsampling[:])
@@ -2242,7 +2270,7 @@ class Interferometer(object):
         self.GUIres = False
         newtext = self.fmtA%self.Nant 
         self.antText.set_text(newtext)
-        self.widget['diameter'].set_val(self.Diameters[0])
+        #Rself.widget['diameter'].set_val(self.Diameters[0])
         self.widget['lat'].set_val(self.lat/self.deg2rad)
         self.widget['dec'].set_val(self.dec/self.deg2rad)
         self.widget['H0'].set_val(self.Hcov[0]/self.Hfac)
@@ -3345,18 +3373,6 @@ class UVPLOTTER(object):
 
 
     self.canvasUV1.draw()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

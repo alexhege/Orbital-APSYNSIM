@@ -2,7 +2,7 @@
 
 echoBlackBox = False
 
-APSYNSIMDir = /home/hegedus/Downloads/APSYNSIM_v1.3
+APSYNSIMDir = /home/hegedus/Downloads/gitAPSY/Orbital-APSYNSIM/APSYNSIM_v1.3
 
 #orbitfile describing spacecraft positions, includes info on how many sc
 orbitFile = /home/hegedus/Downloads/APSYNSIM_v1.3/SCRIPT/inert_traj_061216_reconfig.txt
@@ -11,11 +11,11 @@ orbitFile = /home/hegedus/Downloads/APSYNSIM_v1.3/SCRIPT/inert_traj_061216_recon
 largestbl = 8000. #600.
 
 #quit immediately after figure creation? use with savefig possible
-autoQuit = True 
+autoQuit = False 
 
 #if savefig true, then save fig to this path, .png only
 saveFig = True
-figName = /home/hegedus/Downloads/RadGal/vlba.png #/media/sf_XubuntuShare/RadGal/
+figName = /home/hegedus/Downloads/RadGal/Tvlba.png #/media/sf_XubuntuShare/RadGal/
 
 #file append '#timesteps rmse date' to
 saveRMSE = True
@@ -27,7 +27,7 @@ Npix = 2048 #power of 2 image size int
 #range format ((a1, a2), (b1, b2), ...) indices into time series from a1 up to not including a2
 #For a single range ((a1, a2)) or (a1, a2) work
 #for blackbox, works with indices into orbit file, vlba uses JD, eg ((2457690.5, 2457690.6))
-ranges = ((2457690.5, 2457690.6))
+ranges = ((2457690.5, 2457690.51))
 
 #step for JD vlba
 stepJD = .01
@@ -38,7 +38,7 @@ stepJD = .01
 imageName = dubGauss.png #full path, or just imagename if in APSYNSIM_v1.3/PICTURES, png only
 imSize = .08 #arcsec width of image
 wavelength = .1 #30. #in meters 
-brightestPix = 500.0 #highest flux density pixel in image (Jy), rmse will scale with this
+brightestPix = 50.0 #highest flux density pixel in image (Jy), rmse will scale with this
 
 
 #in array file/inbase file
@@ -57,7 +57,7 @@ gainNoiseRMS = (0.1, 0.1)
 tNoise = True
 thermalNoise = galactic 
 step = 1 #How often to update noise, higher is faster
-intTime = .005 # in seconds
+intTime = 864. #.005 # in seconds, either stepJD in seconds or seconds btwn positions in pos file for space mode
 bandwidth = 32000 
 
 

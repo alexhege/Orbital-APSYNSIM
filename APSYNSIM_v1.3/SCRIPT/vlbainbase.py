@@ -70,7 +70,7 @@ scposECEF = np.array([[-2353621.437 ,-4641341.473  , 3677052.268  ], [-2351112.6
 scposECEF =scposECEF.T
 
 
-JDranges =  ((2457690.5, 2457690.6))
+JDranges =  ((2457690.5, 2457690.51))
 JDstep = .01
 
 timesnips = []
@@ -79,12 +79,17 @@ if len(np.shape(JDranges)) == 1:
   JDstart, JDend = JDranges
   assert JDend > JDstart, "error, JDend = %f before JDstart = %f" % (JDend, JDstart)
   numJD = int((JDend - JDstart)/JDstep)+1
+  if ((JDend - JDstart)/JDstep) == int((JDend - JDstart)/JDstep):
+    numJD = numJD - 1 #to make it exclusive the later time if lines up exactly with step size  
+    
   timesnips += np.linspace(JDstart, JDend, numJD).tolist()
 else:
   for r in JDranges:
     JDstart, JDend = r
     assert JDend > JDstart, "error, JDend = %f before JDstart = %f" % (JDend, JDstart)
     numJD = int((JDend - JDstart)/JDstep)+1
+    if ((JDend - JDstart)/JDstep) == int((JDend - JDstart)/JDstep):
+      numJD = numJD - 1 #to make it exclusive the later time if lines up exactly with step size  
     timesnips += np.linspace(JDstart, JDend, numJD).tolist()
     
 times = timesnips
